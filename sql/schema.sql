@@ -9,7 +9,7 @@ CREATE TABLE public.users (
 CREATE TABLE public.task (
   id SERIAL PRIMARY KEY,
   name CHARACTER VARYING(64) NOT NULL,
-  date DATE NOT NULL DEFAULT CURRENT_DATE, -- Dagur en ekki tími
+  date DATE NOT NULL DEFAULT CURRENT_DATE, -- Dagsetning (gefur okkur ekki klukku)
   user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE -- Einn user gerir hvert task
 );
 
