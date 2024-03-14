@@ -1,10 +1,10 @@
 import pg from 'pg';
 import slugify from 'slugify';
-import { DatabaseGame, DatabaseTeam, Game, Gameday } from '../types.js';
+import { DatabaseTask, DatabaseTaskTag, DatabaseTaskType, Task } from '../types.js';
 import { environment } from './environment.js';
 import { ILogger, logger as loggerSingleton } from './logger.js';
 
-const MAX_GAMES = 100;
+const MAX_TASKS = 100;
 
 /**
  * Database class.
@@ -96,49 +96,102 @@ export class Database {
     }
   }
 
-  async getTeam(slug: string): Promise<DatabaseTeam | null> {
-    const q = 'SELECT id, name, description FROM teams WHERE slug = $1';
+  /**
+   * Get á TaskType from the database.
+   * @param slug slug of the task type
+   * @returns TaskType or null if not found
+   */
+  async getTaskType(slug: string): Promise<DatabaseTaskType | null> {
+    const q = 'SELECT id, name FROM task_types WHERE slug = $1';
     const result = await this.query(q, [slug]);
 
     if (result && result.rows.length === 1) {
       const row = result.rows[0];
-      const team: DatabaseTeam = {
+      const task_type: DatabaseTaskType = {
         id: row.id,
         name: row.name,
-        slug: slug,
-        description: row.description,
+        slug: slug
       };
-      return team;
+      return task_type;
     }
 
     return null;
   }
 
   /**
-   * Get teams from the database.
+   * Get á TaskTag from the database.
+   * @param slug slug of the task tag
+   * @returns TaskTag or null if not found
    */
-  async getTeams() {
-    const q = 'SELECT id, name, description FROM teams';
-    const result = await this.query(q);
+  async getTaskTag(slug: string): Promise<DatabaseTaskTag | null> {
+    const q = 'SELECT id, name FROM task_tags WHERE slug = $1';
+    const result = await this.query(q, [slug]);
 
-    const teams: Array<DatabaseTeam> = [];
-    if (result && (result.rows?.length ?? 0) > 0) {
-      for (const row of result.rows) {
-        const team: DatabaseTeam = {
-          id: row.id,
-          name: row.name,
-          slug: row.slug,
-          description: row.description,
-        };
-        teams.push(team);
-      }
-
-      return teams;
+    if (result && result.rows.length === 1) {
+      const row = result.rows[0];
+      const task_tag: DatabaseTaskTag = {
+        id: row.id,
+        name: row.name,
+        slug: slug
+      };
+      return task_tag;
     }
 
     return null;
   }
 
+  /**
+   * Get task types from the database.
+   */
+  async getTaskTypes() {
+    const q = 'SELECT id, name FROM task_types';
+    const result = await this.query(q);
+
+    const task_types: Array<DatabaseTaskType> = [];
+    if (result && (result.rows?.length ?? 0) > 0) {
+      for (const row of result.rows) {
+        const task_type: DatabaseTaskType = {
+          id: row.id,
+          name: row.name,
+          slug: row.slug
+        };
+        task_types.push(task_type);
+      }
+
+      return task_types;
+    }
+
+    return null;
+  }
+
+  /**
+   * Get task tags from the database.
+   */
+  async getTaskTags() {
+    const q = 'SELECT id, name FROM task_tags';
+    const result = await this.query(q);
+
+    const task_tags: Array<DatabaseTaskTag> = [];
+    if (result && (result.rows?.length ?? 0) > 0) {
+      for (const row of result.rows) {
+        const task_tag: DatabaseTaskTag = {
+          id: row.id,
+          name: row.name,
+          slug: row.slug
+        };
+        task_tags.push(task_tag);
+      }
+
+      return task_tags;
+    }
+
+    return null;
+  }
+
+  /**
+   * Delete a task type from the database.
+   */
+  /* Bíðum aðeins með þetta
   async deleteTeam(slug: string): Promise<boolean> {
     const result = await this.query('DELETE FROM teams WHERE slug = $1', [
       slug,
@@ -189,12 +242,14 @@ export class Database {
 
     return result;
   }
+  */
 
   /**
-   * Get games from the database.
-   * @param {number} [limit=MAX_GAMES] Number of games to get.
+   * Get tasks from the database.
+   * @param {number} [limit=MAX_GAMES] Number of tasks to get.
    */
-  async getGames(limit = MAX_GAMES): Promise<Game[] | null> {
+  async getTasks(limit = MAX_TASKS): Promise<Task[] | null> {
+    // ?????? Þarf að laga þessa SQL skipun - Ísak
     const q = `
       SELECT
         games.id as id,
@@ -215,38 +270,42 @@ export class Database {
     `;
 
     // Ensure we don't get too many games and that we get at least one
-    const usedLimit = Math.min(limit > 0 ? limit : MAX_GAMES, MAX_GAMES);
+    const usedLimit = Math.min(limit > 0 ? limit : MAX_TASKS, MAX_TASKS);
 
     const result = await this.query(q, [usedLimit.toString()]);
 
-    const games: Array<Game> = [];
+    const tasks: Array<Task> = [];
     if (result && (result.rows?.length ?? 0) > 0) {
       for (const row of result.rows) {
-        const game: Game = {
+        const task: Task = {
           id: row.id,
+          name: row.name,
+          description: row.description,
           date: row.date,
-          home: {
-            name: row.home_name,
-            score: row.home_score,
+          task_type: {
+            id: row.task_type_id,
+            name: row.task_type_name,
           },
-          away: {
-            name: row.away_name,
-            score: row.away_score,
+          task_tag: {
+            id: row.task_tag_id,
+            name: row.task_tag_name,
           },
+          user_id: row.user_id, // ?? getum breytt í fylki með uppl um notanda
         };
-        games.push(game);
+        tasks.push(task);
       }
 
-      return games;
+      return tasks;
     }
 
     return null;
   }
 
   /**
-   * Get a game from the database.
+   * Get a task from the database.
    */
-  async getGame(id: string): Promise<Game | null> {
+  async getTask(id: string): Promise<Task | null> {
+    // ?????? Þarf að laga þessa SQL skipun - Ísak
     const q = `
       SELECT
         games.id as id,
@@ -269,96 +328,99 @@ export class Database {
 
     if (result && result.rows.length === 1) {
       const row = result.rows[0];
-      const game: Game = {
+      const task: Task = {
         id: row.id,
+        name: row.name,
+        description: row.description,
         date: row.date,
-        home: {
-          name: row.home_name,
-          score: row.home_score,
+        task_type: {
+          id: row.task_type_id,
+          name: row.task_type_name,
         },
-        away: {
-          name: row.away_name,
-          score: row.away_score,
+        task_tag: {
+          id: row.task_tag_id,
+          name: row.task_tag_name,
         },
+        user_id: row.user_id, // ?? getum breytt í fylki með uppl um notanda
       };
-      return game;
+      return task;
     }
 
     return null;
   }
 
   /**
-   * Insert a team into the database.
-   * @param team Team to insert.
+   * Insert a task type into the database.
+   * @param type_name Task type to insert.
    */
-  async insertTeam(
-    team: string,
-    description?: string,
-  ): Promise<DatabaseTeam | null> {
+  async insertTaskType(
+    type_name: string
+  ): Promise<DatabaseTaskType | null> {
     const result = await this.query(
-      'INSERT INTO teams (name, slug, description) VALUES ($1, $2, $3) ON CONFLICT DO NOTHING RETURNING id, name, description',
-      [team, slugify(team), description ?? ''],
+      'INSERT INTO task_types (name, slug) VALUES ($1, $2) ON CONFLICT DO NOTHING RETURNING id, name',
+      [type_name, slugify(type_name)],
     );
     if (result) {
-      const resultTeam: DatabaseTeam = {
+      const resultTaskTypes: DatabaseTaskType = {
         id: result.rows[0].id,
         name: result.rows[0].name,
         slug: result.rows[0].slug,
-        description: result.rows[0].description,
       };
-      return resultTeam;
+      return resultTaskTypes;
     }
     return null;
   }
 
   /**
-   * Insert teams into the database.
-   * @param teams List of teams to insert.
+   * Insert task types into the database.
+   * @param task_types List of teams to insert.
    * @returns List of teams inserted.
    */
-  async insertTeams(teams: string[]): Promise<Array<DatabaseTeam>> {
-    const inserted: Array<DatabaseTeam> = [];
-    for await (const team of teams) {
-      const result = await this.insertTeam(team);
+  async insertTaskTypes(task_types: string[]): Promise<Array<DatabaseTaskType>> {
+    const inserted: Array<DatabaseTaskType> = [];
+    for await (const task_type of task_types) {
+      const result = await this.insertTaskType(task_type);
       if (result) {
         inserted.push(result);
       } else {
-        this.logger.warn('unable to insert team', { team });
+        this.logger.warn('unable to insert task type', { task_type });
       }
     }
     return inserted;
   }
 
   /**
-   * Insert a game into the database.
+   * Insert a task into the database.
    */
-  async insertGame(game: Omit<DatabaseGame, 'id'>): Promise<Game | null> {
+  async insertTask(task: Omit<DatabaseTask, 'id'>): Promise<Task | null> {
     const q = `
       INSERT INTO
-        games (date, home, away, home_score, away_score)
+        tasks (name, description, date, task_type, task_tag, user_id)
       VALUES
-        ($1, $2, $3, $4, $5)
+        ($1, $2, $3, $4, $5, $6)
       RETURNING id
     `;
 
     const result = await this.query(q, [
-      game.date,
-      game.home_id,
-      game.away_id,
-      game.home_score.toString(),
-      game.away_score.toString(),
+      task.name,
+      task.description,
+      task.date,
+      task.task_type_id, // ??? .toString() ???
+      task.task_tag_id, // ??? .toString() ???
+      task.user_id, // ??? .toString() ???
     ]);
 
     if (!result || result.rowCount !== 1) {
-      this.logger.warn('unable to insert game', { result, game });
+      this.logger.warn('unable to insert task', { result, task });
       return null;
     }
-    return this.getGame(result.rows[0].id);
+    return this.getTask(result.rows[0].id);
   }
 
   /**
    * Insert gamedays into the database.
    */
+  /*
   async insertGamedays(
     gamedays: Gameday[],
     dbTeams: DatabaseTeam[],
@@ -383,7 +445,7 @@ export class Database {
           continue;
         }
 
-        const result = await this.insertGame({
+        const result = await this.insertTask({
           date: gameday.date.toISOString(),
           home_id: homeId,
           away_id: awayId,
@@ -399,15 +461,16 @@ export class Database {
 
     return true;
   }
+  */
 
   /**
-   * Delete a game from the database.
+   * Delete a task from the database.
    */
-  async deleteGame(id: string): Promise<boolean> {
-    const result = await this.query('DELETE FROM games WHERE id = $1', [id]);
+  async deleteTask(id: string): Promise<boolean> {
+    const result = await this.query('DELETE FROM tasks WHERE id = $1', [id]);
 
     if (!result || result.rowCount !== 1) {
-      this.logger.warn('unable to delete game', { result, id });
+      this.logger.warn('unable to delete task', { result, id });
       return false;
     }
     return true;

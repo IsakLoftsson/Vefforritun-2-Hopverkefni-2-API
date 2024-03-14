@@ -13,19 +13,27 @@ export const router = express.Router();
 export async function index(req: Request, res: Response) {
   return res.json([
     {
-      href: '/teams',
+      href: '/verkefni',
       methods: ['GET', 'POST'],
     },
     {
-      href: '/teams/:slug',
+      href: '/verkefni/:slug',
       methods: ['GET', 'PATCH', 'DELETE'],
     },
     {
-      href: '/games',
+      href: '/verkefni_klarud',
       methods: ['GET', 'POST'],
     },
     {
-      href: '/games/:date',
+      href: '/verkefni_klarud/:slug',
+      methods: ['GET', 'PATCH', 'DELETE'],
+    },
+    {
+      href: '/flokkar',
+      methods: ['GET', 'POST'],
+    },
+    {
+      href: '/flokkar/:slug',
       methods: ['GET', 'PATCH', 'DELETE'],
     },
   ]);
