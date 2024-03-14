@@ -67,7 +67,7 @@ async function setupData(db: Database, logger: ILogger) {
   }
   logger.info('gameday files parsed', { total: gamedays.length });
 
-  const dbTeams = await db.insertTeams(teams);
+  const dbTeams = await db.insertTaskTypes(teams);
   logger.info('teams inserted', { total: dbTeams.length });
 
   const dbGamedays = await db.insertGamedays(gamedays, dbTeams);

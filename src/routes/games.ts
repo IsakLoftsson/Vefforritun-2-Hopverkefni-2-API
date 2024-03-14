@@ -1,10 +1,10 @@
 import { Request, Response } from 'express';
 import { getDatabase } from '../lib/db.js';
 import {
-  createGameValidationMiddleware,
-  sanitizationMiddleware,
-  validationCheck,
-  xssSanitizationMiddleware,
+    createGameValidationMiddleware,
+    sanitizationMiddleware,
+    validationCheck,
+    xssSanitizationMiddleware,
 } from '../lib/validation.js';
 
 export async function listGames(req: Request, res: Response) {
@@ -30,7 +30,7 @@ export async function getGame(req: Request, res: Response) {
 export async function createGameHandler(req: Request, res: Response) {
   const { home, away, home_score, away_score, date } = req.body;
 
-  const createdGame = await getDatabase()?.insertGame({
+  const createdGame = await getDatabase()?.insertTask({
     home_id: home,
     away_id: away,
     home_score,

@@ -21,8 +21,8 @@ export type Task = {
   name: string;
   description: string;
   date: Date;
-  taskTypeId: TaskType;
-  taskTagId: TaskTag;
+  task_type: TaskType;
+  task_tag: TaskTag;
   user_id: number; // Foreign key tengt user
 };
 
@@ -36,11 +36,13 @@ export type TaskTypeAssociation = {
 export type DatabaseTaskType = {
   id: string;
   name: string;
+  slug: string; // ?????? er ekki alveg viss hvort við notum þetta - ísak
 };
 
 export type DatabaseTaskTag = {
   id: string;
   name: string;
+  slug: string; // ?????? er ekki alveg viss hvort við notum þetta - ísak
 };
 
 export type DatabaseTask = {
