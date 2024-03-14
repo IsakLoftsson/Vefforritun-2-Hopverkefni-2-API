@@ -1,4 +1,4 @@
-import { NextFunction, Request, Response } from 'express';
+/* import { NextFunction, Request, Response } from 'express';
 
 import slugify from 'slugify';
 import { getDatabase } from '../lib/db.js';
@@ -128,3 +128,4 @@ export async function deleteTeam(req: Request, res: Response) {
 
   return res.json(deletedTeam);
 }
+ */
