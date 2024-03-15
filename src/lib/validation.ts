@@ -4,7 +4,7 @@ import slugify from 'slugify';
 import xss from 'xss';
 import { getDatabase } from './db.js';
 
-export function createGameValidationMiddleware() {
+export function createTaskValidationMiddleware() {
   return [
     // format should be like 2024-02-11T19:01
     body('date')
@@ -14,28 +14,30 @@ export function createGameValidationMiddleware() {
         return !Number.isNaN(date.getTime());
       })
       .withMessage('Dagsetning verður að vera gild'),
+    /* Þurfum ekki?
     body('home').custom((value, { req }) => {
       if (value === req.body.away) {
         throw new Error('Heimalið og útilið verða að vera mismunandi');
       }
       return true;
-    }),
-    body('home').custom(async (value) => {
-      const teams = (await getDatabase()?.getTeams()) ?? [];
+    }),*/
+    body('taskType').custom(async (value) => {
+      const taskTypes = (await getDatabase()?.getTaskTypes()) ?? [];
 
-      if (!teams.find((t) => t.id.toString() === value)) {
-        throw new Error('Heimalið verður að vera gilt');
+      if (!taskTypes.find((t) => t.id.toString() === value)) {
+        throw new Error('TaskType verkefnis verður að vera gilt');
       }
       return true;
     }),
-    body('away').custom(async (value) => {
-      const teams = (await getDatabase()?.getTeams()) ?? [];
+    body('taskTag').custom(async (value) => {
+      const taskTypes = (await getDatabase()?.getTaskTypes()) ?? [];
 
-      if (!teams.find((t) => t.id.toString() === value)) {
-        throw new Error('Útilið verður að vera gilt');
+      if (!taskTypes.find((t) => t.id.toString() === value)) {
+        throw new Error('TaskTag verkefnis verður að vera gilt');
       }
       return true;
     }),
+    /* Þurfum ekki?
     body('home_score')
       .isInt({ min: 0, max: 99 })
       .withMessage(
@@ -46,6 +48,7 @@ export function createGameValidationMiddleware() {
       .withMessage(
         'Stig útiliðs verður að vera heiltala, 0 eða stærri, hámark 99',
       ),
+    */
   ];
 }
 
@@ -53,20 +56,18 @@ export function createGameValidationMiddleware() {
 export function xssSanitizationMiddleware() {
   return [
     body('date').customSanitizer((v) => xss(v)),
-    body('home').customSanitizer((v) => xss(v)),
-    body('away').customSanitizer((v) => xss(v)),
-    body('home_score').customSanitizer((v) => xss(v)),
-    body('away_score').customSanitizer((v) => xss(v)),
+    body('task_type.name').customSanitizer((v) => xss(v)),
+    body('task_tag.name').customSanitizer((v) => xss(v)),
+    body('description').customSanitizer((v) => xss(v)),
   ];
 }
 
 export function sanitizationMiddleware() {
   return [
     body('date').trim().escape(),
-    body('home').trim().escape(),
-    body('away').trim().escape(),
-    body('home_score').trim().escape(),
-    body('away_score').trim().escape(),
+    body('task_type.name').trim().escape(),
+    body('task_tag.name').trim().escape(),
+    body('description').trim().escape(),
   ];
 }
 
@@ -142,9 +143,9 @@ export function validationCheck(
   return next();
 }
 
-export const teamDoesNotExistValidator = body('name').custom(async (name) => {
-  if (await await getDatabase()?.getTeam(slugify(name))) {
-    return Promise.reject(new Error('team with name already exists'));
+export const taskTypeDoesNotExistValidator = body('name').custom(async (name) => {
+  if (await await getDatabase()?.getTaskType(slugify(name))) {
+    return Promise.reject(new Error('TaskType already exists'));
   }
   return Promise.resolve();
 });
