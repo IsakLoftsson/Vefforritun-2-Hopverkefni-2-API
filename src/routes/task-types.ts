@@ -1,4 +1,4 @@
-/* import { NextFunction, Request, Response } from 'express';
+import { NextFunction, Request, Response } from 'express';
 
 import slugify from 'slugify';
 import { getDatabase } from '../lib/db.js';
@@ -6,29 +6,29 @@ import {
   atLeastOneBodyValueValidator,
   genericSanitizer,
   stringValidator,
-  teamDoesNotExistValidator,
+  taskTypeDoesNotExistValidator,
   validationCheck,
   xssSanitizer,
 } from '../lib/validation.js';
 
-export async function listTeams(req: Request, res: Response) {
-  const teams = await getDatabase()?.getTeams();
+export async function listTaskTypes(req: Request, res: Response) {
+  const task_types = await getDatabase()?.getTaskTypes();
 
-  if (!teams) {
-    return res.status(500).json({ error: 'Could not get teams' });
+  if (!task_types) {
+    return res.status(500).json({ error: 'Could not get task types' });
   }
 
-  return res.json(teams);
+  return res.json(task_types);
 }
 
-export async function createTeamHandler(
+export async function createTaskTypeHandler(
   req: Request,
   res: Response,
   next: NextFunction,
 ) {
-  const { name, description } = req.body;
+  const { name } = req.body;
 
-  const createdDeprtment = await getDatabase()?.insertTeam(name, description);
+  const createdDeprtment = await getDatabase()?.insertTaskType(name);
 
   if (!createdDeprtment) {
     return next(new Error('unable to create department'));
@@ -37,41 +37,41 @@ export async function createTeamHandler(
   return res.status(201).json(createdDeprtment);
 }
 
-export const createTeam = [
+export const createTaskType = [
   stringValidator({ field: 'name', maxLength: 64 }),
   stringValidator({
     field: 'description',
     valueRequired: false,
     maxLength: 1000,
   }),
-  teamDoesNotExistValidator,
+  taskTypeDoesNotExistValidator,
   xssSanitizer('title'),
   xssSanitizer('description'),
   validationCheck,
   genericSanitizer('title'),
   genericSanitizer('description'),
-  createTeamHandler,
+  createTaskTypeHandler,
 ];
 
-export async function getTeam(req: Request, res: Response) {
-  const team = await getDatabase()?.getTeam(req.params.slug);
+export async function getTaskType(req: Request, res: Response) {
+  const task_type = await getDatabase()?.getTaskType(req.params.slug);
 
-  if (!team) {
-    return res.status(404).json({ error: 'Team not found' });
+  if (!task_type) {
+    return res.status(404).json({ error: 'Task Type not found' });
   }
 
-  return res.json(team);
+  return res.json(task_type);
 }
 
-export async function updateteamHandler(
+export async function updateTaskTypeHandler(
   req: Request,
   res: Response,
   next: NextFunction,
 ) {
   const { slug } = req.params;
-  const team = await await getDatabase()?.getTeam(slug);
+  const task_type = await await getDatabase()?.getTaskType(slug);
 
-  if (!team) {
+  if (!task_type) {
     return next();
   }
 
@@ -90,21 +90,21 @@ export async function updateteamHandler(
   ];
 
   const updated = await getDatabase()?.conditionalUpdate(
-    'teams',
-    team.id,
+    'task_types',
+    task_type.id,
     fields,
     values,
   );
 
   if (!updated) {
-    return next(new Error('unable to update team'));
+    return next(new Error('unable to update task type'));
   }
 
-  const updatedteam = updated.rows[0];
-  return res.json(updatedteam);
+  const updated_task_type = updated.rows[0];
+  return res.json(updated_task_type);
 }
 
-export const updateTeam = [
+export const updateTaskType = [
   stringValidator({ field: 'name', maxLength: 64, optional: true }),
   stringValidator({
     field: 'description',
@@ -116,16 +116,16 @@ export const updateTeam = [
   xssSanitizer('name'),
   xssSanitizer('description'),
   validationCheck,
-  updateteamHandler,
+  updateTaskTypeHandler,
 ];
 
-export async function deleteTeam(req: Request, res: Response) {
-  const deletedTeam = await getDatabase()?.deleteTeam(req.params.slug);
 
-  if (!deletedTeam) {
-    return res.status(500).json({ error: 'Could not delete team' });
+export async function deleteTaskType(req: Request, res: Response) {
+  const deletedTaskType = await getDatabase()?.deleteTaskType(req.params.slug);
+
+  if (!deletedTaskType) {
+    return res.status(500).json({ error: 'Could not delete task type' });
   }
 
-  return res.json(deletedTeam);
+  return res.json(deletedTaskType);
 }
- */

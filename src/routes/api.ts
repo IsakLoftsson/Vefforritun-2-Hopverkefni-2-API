@@ -1,12 +1,12 @@
 import express, { Request, Response } from 'express';
-/* import { createGame, deleteGame, getGame, listGames } from './games.js';
+import { createTask, deleteTask, getTask, listTasks } from './tasks.js';
 import {
-  createTeam,
-  deleteTeam,
-  getTeam,
-  listTeams,
-  updateTeam,
-} from './teams.js'; */
+  createTaskType,
+  deleteTaskType,
+  getTaskType,
+  listTaskTypes,
+  updateTaskType,
+} from './task-types.js';
 
 export const router = express.Router();
 
@@ -41,14 +41,14 @@ export async function index(req: Request, res: Response) {
 
 router.get('/', index);
 
-/* router.get('/teams', listTeams);
-router.post('/teams', createTeam);
-router.get('/teams/:slug', getTeam);
-router.patch('/teams/:slug', updateTeam);
-router.delete('/teams/:slug', deleteTeam);
+router.get('/teams', listTaskTypes);
+router.post('/teams', createTaskType);
+router.get('/teams/:slug', getTaskType);
+router.patch('/teams/:slug', updateTaskType);
+router.delete('/teams/:slug', deleteTaskType);
 
-router.get('/games', listGames);
-router.post('/games', createGame);
-router.get('/games/:id', getGame);
-router.delete('/games/:id', deleteGame); */
-// router.patch('/games/:id', updateGame);
+router.get('/games', listTasks);
+router.post('/games', createTask);
+router.get('/games/:id', getTask);
+router.delete('/games/:id', deleteTask);
+// router.patch('/games/:id', updateTask);
