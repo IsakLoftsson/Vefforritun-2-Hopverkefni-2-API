@@ -70,18 +70,19 @@ async function setupData(db: Database, logger: ILogger) {
   const dbTeams = await db.insertTaskTypes(teams);
   logger.info('teams inserted', { total: dbTeams.length });
 
-  const dbGamedays = await db.insertGamedays(gamedays, dbTeams);
+  //const dbGamedays = await db.insertGamedays(gamedays, dbTeams);
 
-  if (!dbGamedays) {
+ /* if (!dbGamedays) {
     logger.info('error inserting gamedays');
     return false;
   }
+
 
   logger.info('gamedays inserted');
 
   return true;
 }
-
+*/
 async function create() {
   const logger = loggerSingleton;
   const env = environment(process.env, logger);
@@ -109,10 +110,10 @@ async function create() {
     // falls through
   }
 
-  if (!resultFromReadingData) {
+ /* if (!resultFromReadingData) {
     logger.info('error reading data from files');
     process.exit(1);
-  }
+  }*/
 
   logger.info('setup complete');
   await db.close();
@@ -120,4 +121,4 @@ async function create() {
 
 create().catch((err) => {
   console.error('error running setup', err);
-});
+});}

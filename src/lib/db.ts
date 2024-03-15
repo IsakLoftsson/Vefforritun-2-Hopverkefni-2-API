@@ -252,18 +252,16 @@ export class Database {
     // ?????? Þarf að laga þessa SQL skipun - Ísak
     const q = `
       SELECT
-        games.id as id,
+        tasks.id as id,
         date,
-        home_team.name AS home_name,
-        home_score,
-        away_team.name AS away_name,
-        away_score
+        task_type.name AS task_type,
+        task_tag.name AS task_tag
       FROM
-        games
+        tasks
       LEFT JOIN
-        teams AS home_team ON home_team.id = games.home
+        task_types AS task_type ON task_type.id = tasks.task_type
       LEFT JOIN
-        teams AS away_team ON away_team.id = games.away
+       task_tags AS task_tag ON task_tag.id = tasks.task_tag
       ORDER BY
         date DESC
       LIMIT $1

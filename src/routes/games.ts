@@ -1,4 +1,4 @@
-import { Request, Response } from 'express';
+/* import { Request, Response } from 'express';
 import { getDatabase } from '../lib/db.js';
 import {
     createGameValidationMiddleware,
@@ -62,3 +62,4 @@ export async function deleteGame(req: Request, res: Response) {
 
   return res.status(204).json({});
 }
+ */
