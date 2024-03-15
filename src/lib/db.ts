@@ -191,21 +191,21 @@ export class Database {
   /**
    * Delete a task type from the database.
    */
-  /* Bíðum aðeins með þetta
-  async deleteTeam(slug: string): Promise<boolean> {
-    const result = await this.query('DELETE FROM teams WHERE slug = $1', [
+  async deleteTaskType(slug: string): Promise<boolean> {
+    const result = await this.query('DELETE FROM task_types WHERE slug = $1', [
       slug,
     ]);
 
     if (!result || result.rowCount !== 1) {
-      this.logger.warn('unable to delete team', { result, slug });
+      this.logger.warn('unable to delete task type', { result, slug });
       return false;
     }
     return true;
   }
 
+
   async conditionalUpdate(
-    table: 'teams' | 'games',
+    table: 'task_types' | 'tasks',
     id: string | number,
     fields: Array<string | null>,
     values: Array<string | number | null>,
@@ -242,7 +242,6 @@ export class Database {
 
     return result;
   }
-  */
 
   /**
    * Get tasks from the database.
