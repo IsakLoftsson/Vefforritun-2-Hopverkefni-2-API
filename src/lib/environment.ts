@@ -28,6 +28,9 @@ export function environment(
   }
 
   const { PORT: port, DATABASE_URL: envConnectionString } = env;
+  console.log('port',port);
+  console.log('envConnectionString',envConnectionString);
+  
 
   let error = false;
 
