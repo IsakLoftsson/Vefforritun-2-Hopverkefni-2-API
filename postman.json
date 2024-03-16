@@ -1,0 +1,32 @@
+{"bætta við Verkefni dæmi":{
+    
+        "name": "TEST2",
+        "description": "TESTING2",
+        "date": "2024-03-16T00:00:00.000Z",
+        "task_type": 1,
+        "task_tag": 1,
+        "user_id": 4
+        
+},
+"update a Team verður að velja annað hvort name eða desc til að updatea":
+{
+    "name": "Optional Input",
+    "description": "Optional Input"
+},
+"add a game":
+{
+    "date": "2024-01-01T15:20:53.955Z",
+    "home": "input",
+    "away": "input",
+    "home_score": 5,
+    "away_score": -5
+},
+"update a game":
+{
+    "date": "2024-01-01T15:20:53.955Z",
+    "home": "input",
+    "away": "input",
+    "home_score": 5,
+    "away_score": -5
+}
+}

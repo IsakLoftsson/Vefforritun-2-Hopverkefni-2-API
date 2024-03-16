@@ -32,6 +32,11 @@ export type TaskTypeAssociation = {
   type_id: number; // Foreign key tengt task_type
 };
 */
+export type DatabaseUser = {
+  id: string;
+  name: string;
+  admin: boolean; // ?????? er ekki alveg viss hvort við notum þetta - ísak
+};
 
 export type DatabaseTaskType = {
   id: string;

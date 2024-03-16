@@ -14,26 +14,30 @@ export function createTaskValidationMiddleware() {
         return !Number.isNaN(date.getTime());
       })
       .withMessage('Dagsetning verður að vera gild'),
-    /* Þurfum ekki?
-    body('home').custom((value, { req }) => {
-      if (value === req.body.away) {
-        throw new Error('Heimalið og útilið verða að vera mismunandi');
-      }
-      return true;
-    }),*/
-    body('taskType').custom(async (value) => {
-      const taskTypes = (await getDatabase()?.getTaskTypes()) ?? [];
+    body('task_type').custom(async (value) => {
+      const task_type = (await getDatabase()?.getTaskTypes()) ?? [];
 
-      if (!taskTypes.find((t) => t.id.toString() === value)) {
+      console.log(task_type)
+    
+      if (!task_type.find((t) => t.id.toString() === value.toString())) {
         throw new Error('TaskType verkefnis verður að vera gilt');
       }
       return true;
     }),
-    body('taskTag').custom(async (value) => {
-      const taskTypes = (await getDatabase()?.getTaskTypes()) ?? [];
+    body('task_tag').custom(async (value) => {
+      const task_tag = (await getDatabase()?.getTaskTags()) ?? [];
 
-      if (!taskTypes.find((t) => t.id.toString() === value)) {
+      if (!task_tag.find((t) => t.id.toString() === value.toString())) {
         throw new Error('TaskTag verkefnis verður að vera gilt');
+      }
+      return true;
+    }),
+    // þarf að laga verður allt öðruvísi gilli
+    body('user_id').custom(async (value) => {
+      const user_id = (await getDatabase()?.getUsers()) ?? [];
+
+      if (!user_id.find((t) => t.id.toString() === value.toString())) {
+        throw new Error('userError');
       }
       return true;
     }),
@@ -55,25 +59,30 @@ export function createTaskValidationMiddleware() {
 // Viljum keyra sér og með validation, ver gegn „self XSS“
 export function xssSanitizationMiddleware() {
   return [
+    body('name').customSanitizer((v) => xss(v)),
+    body('description').customSanitizer((v) => xss(v)),
     body('date').customSanitizer((v) => xss(v)),
     body('task_type.name').customSanitizer((v) => xss(v)),
     body('task_tag.name').customSanitizer((v) => xss(v)),
-    body('description').customSanitizer((v) => xss(v)),
+    body('user_id').customSanitizer((v) => xss(v)),
   ];
 }
 
 export function sanitizationMiddleware() {
   return [
+    body('name').trim().escape(),
+    body('description').trim().escape(),
     body('date').trim().escape(),
     body('task_type.name').trim().escape(),
     body('task_tag.name').trim().escape(),
-    body('description').trim().escape(),
+    body('user_id').trim().escape(),
   ];
 }
 
 export const stringValidator = ({
   field = '',
   valueRequired = true,
+  minLenght = 0,
   maxLength = 0,
   optional = false,
 } = {}) => {
@@ -81,13 +90,14 @@ export const stringValidator = ({
     .trim()
     .isString()
     .isLength({
-      min: valueRequired ? 1 : undefined,
+      min: minLenght ? minLenght : undefined,
       max: maxLength ? maxLength : undefined,
     })
     .withMessage(
       [
         field,
         valueRequired ? 'required' : '',
+        minLenght ? `min ${minLenght}` : '',
         maxLength ? `max ${maxLength} characters` : '',
       ]
         .filter((i) => Boolean(i))
