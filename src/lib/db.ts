@@ -248,13 +248,15 @@ export class Database {
    * @param {number} [limit=MAX_GAMES] Number of tasks to get.
    */
   async getTasks(limit = MAX_TASKS): Promise<Task[] | null> {
-    // ?????? Þarf að laga þessa SQL skipun - Ísak
+    // Klár skipun enn kanski að breytta array<task> i mapper? - Gísli
     const q = `
       SELECT
         tasks.id as id,
+        tasks.name,
         date,
-        task_type.name AS task_type,
-        task_tag.name AS task_tag
+        description,
+        task_type.id AS task_type_id,task_type.name AS task_type_name,
+        task_tag.id AS task_tag_id,task_tag.name AS task_tag_name
       FROM
         tasks
       LEFT JOIN

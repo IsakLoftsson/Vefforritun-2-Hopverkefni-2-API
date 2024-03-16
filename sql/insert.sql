@@ -6,3 +6,5 @@ INSERT INTO users (name, username, password, admin) VALUES ('Lilja Örk Loftsdó
 INSERT INTO task_types (name, slug) VALUES ('TESTING', 'TEST');
 
 INSERT INTO task_tags (name) VALUES ('TEST');
+
+INSERT INTO tasks (name, description, task_type, task_tag, user_id) VALUES ('TEST1', 'TESTING1', '1', '1', '4');
