@@ -307,20 +307,20 @@ export class Database {
     // ?????? Þarf að laga þessa SQL skipun - Ísak
     const q = `
       SELECT
-        games.id as id,
+        tasks.id as id,
+        tasks.name,
         date,
-        home_team.name AS home_name,
-        home_score,
-        away_team.name AS away_name,
-        away_score
+        description,
+        task_type.id AS task_type_id,task_type.name AS task_type_name,
+       task_tag.id AS task_tag_id,task_tag.name AS task_tag_name
       FROM
-        games
+       tasks
       LEFT JOIN
-        teams AS home_team ON home_team.id = games.home
+        task_types AS task_type ON task_type.id = tasks.task_type
       LEFT JOIN
-        teams AS away_team ON away_team.id = games.away
+        task_tags AS task_tag ON task_tag.id = tasks.task_tag
       WHERE
-        games.id = $1
+        tasks.id = $1
     `;
 
     const result = await this.query(q, [id]);
