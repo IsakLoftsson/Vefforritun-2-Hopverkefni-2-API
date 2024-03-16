@@ -4,7 +4,7 @@ import { Database } from './lib/db.js';
 import { environment } from './lib/environment.js';
 import { readFilesFromDir } from './lib/file.js';
 import { ILogger, logger as loggerSingleton } from './lib/logger.js';
-import { parseGamedayFile, parseTeamsJson } from './lib/parse.js';
+import { parseGamedayFile, parseTaskTypesJson } from './lib/parse.js';
 
 const SCHEMA_FILE = './sql/schema.sql';
 const DROP_SCHEMA_FILE = './sql/drop.sql';
@@ -45,7 +45,7 @@ async function setupDbFromFiles(
 
 async function setupData(db: Database, logger: ILogger) {
   const teamsFileData = await readFile(join(INPUT_DIR, 'teams.json'));
-  const teams = parseTeamsJson(teamsFileData.toString('utf-8'));
+  const teams = parseTaskTypesJson(teamsFileData.toString('utf-8'));
   logger.info('team names read', { total: teams.length });
 
   const files = await readFilesFromDir(INPUT_DIR);
