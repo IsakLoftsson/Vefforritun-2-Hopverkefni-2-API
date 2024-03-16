@@ -18,7 +18,7 @@ export async function listTasks(req: Request, res: Response) {
 }
 
 export async function getTask(req: Request, res: Response) {
-  const task = await getDatabase()?.getTask(req.params.id);
+  const task = await getDatabase()?.getTasks();
 
   if (!task) {
     return res.status(404).json({ error: 'task not found' });

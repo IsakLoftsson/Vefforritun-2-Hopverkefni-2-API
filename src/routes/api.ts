@@ -52,3 +52,27 @@ router.post('/games', createTask);
 router.get('/games/:id', getTask);
 router.delete('/games/:id', deleteTask);
 // router.patch('/games/:id', updateTask);
+
+
+router.get('/verkefni', listTasks);
+router.post('/verkefni', createTask);
+router.get('/verkefni/:slug', getTask);
+router.patch('/verkefni/:slug', updateTaskType);
+router.delete('/verkefni/:slug', deleteTask);
+
+/*
+
+router.get('/verkefni_klarud', listTaskTypes);
+router.post('/verkefni_klarud', createTaskType);
+router.get('/verkefni_klarud/:slug', getTaskType);
+router.patch('/verkefni_klarud/:slug', updateTaskType);
+router.delete('/verkefni_klarud/:slug', deleteTaskType);
+
+router.get('/flokkar', listTaskTypes);
+router.post('/flokkar', createTaskType);
+router.get('/flokkar/:slug', getTaskType);
+router.patch('/flokkar/:slug', updateTaskType);
+router.delete('/flokkar/:slug', deleteTaskType);
+
+
+*/
