@@ -3,6 +3,7 @@ import { getDatabase } from '../lib/db.js';
 import {
     createTaskValidationMiddleware,
     sanitizationMiddleware,
+    stringValidator,
     validationCheck,
     xssSanitizationMiddleware,
 } from '../lib/validation.js';
@@ -51,6 +52,15 @@ export async function createTaskHandler(req: Request, res: Response) {
 export const createTask = [
   ...createTaskValidationMiddleware(),
   ...xssSanitizationMiddleware(),
+  stringValidator({
+    field: 'name',
+    minLenght: 3,
+    maxLength: 64}),
+    stringValidator({
+      field: 'description',
+      valueRequired: false,
+      maxLength: 128,
+    }),
   validationCheck,
   ...sanitizationMiddleware(),
   createTaskHandler,

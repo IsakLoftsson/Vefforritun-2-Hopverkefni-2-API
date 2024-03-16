@@ -1,6 +1,6 @@
 import pg from 'pg';
 import slugify from 'slugify';
-import { DatabaseTask, DatabaseTaskTag, DatabaseTaskType, Task } from '../types.js';
+import { DatabaseTask, DatabaseTaskTag, DatabaseTaskType, DatabaseUser, Task } from '../types.js';
 import { environment } from './environment.js';
 import { ILogger, logger as loggerSingleton } from './logger.js';
 
@@ -159,6 +159,26 @@ export class Database {
       }
 
       return task_types;
+    }
+
+    return null;
+  }
+  async getUsers() {
+    const q = 'SELECT id, name FROM users';
+    const result = await this.query(q);
+
+    const users: Array<DatabaseUser> = [];
+    if (result && (result.rows?.length ?? 0) > 0) {
+      for (const row of result.rows) {
+        const user: DatabaseUser = {
+          id: row.id,
+          name: row.name,
+          admin: row.admin
+        };
+        users.push(user);
+      }
+
+      return users;
     }
 
     return null;
