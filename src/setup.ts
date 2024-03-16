@@ -1,15 +1,15 @@
 import { readFile } from 'node:fs/promises';
-import { join } from 'node:path';
+// import { join } from 'node:path';
 import { Database } from './lib/db.js';
 import { environment } from './lib/environment.js';
-import { readFilesFromDir } from './lib/file.js';
+// import { readFilesFromDir } from './lib/file.js';
 import { ILogger, logger as loggerSingleton } from './lib/logger.js';
-import { parseGamedayFile, parseTaskTypesJson } from './lib/parse.js';
+// import { parseGamedayFile, parseTeamsJson } from './lib/parse.js';
 
 const SCHEMA_FILE = './sql/schema.sql';
 const DROP_SCHEMA_FILE = './sql/drop.sql';
 const INSERT_FILE = './sql/insert.sql';
-const INPUT_DIR = './data';
+// const INPUT_DIR = './data';
 
 async function setupDbFromFiles(
   db: Database,
@@ -42,7 +42,7 @@ async function setupDbFromFiles(
 
   return true;
 }
-
+/*
 async function setupData(db: Database, logger: ILogger) {
   const teamsFileData = await readFile(join(INPUT_DIR, 'teams.json'));
   const teams = parseTaskTypesJson(teamsFileData.toString('utf-8'));
@@ -70,9 +70,9 @@ async function setupData(db: Database, logger: ILogger) {
   const dbTeams = await db.insertTaskTypes(teams);
   logger.info('teams inserted', { total: dbTeams.length });
 
-  //const dbGamedays = await db.insertGamedays(gamedays, dbTeams);
+  const dbGamedays = await db.insertGamedays(gamedays, dbTeams);
 
- /* if (!dbGamedays) {
+  if (!dbGamedays) {
     logger.info('error inserting gamedays');
     return false;
   }
@@ -83,6 +83,7 @@ async function setupData(db: Database, logger: ILogger) {
   return true;
 }
 */
+
 async function create() {
   const logger = loggerSingleton;
   const env = environment(process.env, logger);
@@ -103,6 +104,7 @@ async function create() {
     process.exit(1);
   }
 
+  /*
   let resultFromReadingData;
   try {
     resultFromReadingData = await setupData(db, logger);
@@ -110,10 +112,11 @@ async function create() {
     // falls through
   }
 
- /* if (!resultFromReadingData) {
+ if (!resultFromReadingData) {
     logger.info('error reading data from files');
     process.exit(1);
-  }*/
+  }
+  */
 
   logger.info('setup complete');
   await db.close();
@@ -121,4 +124,4 @@ async function create() {
 
 create().catch((err) => {
   console.error('error running setup', err);
-});}
+});
