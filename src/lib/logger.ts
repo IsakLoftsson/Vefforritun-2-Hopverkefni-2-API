@@ -5,7 +5,7 @@ export interface ILogger {
 }
 
 export class Logger implements ILogger {
-  private silent: boolean;
+  silent: boolean;
 
   constructor(silent = false) {
     this.silent = silent;
