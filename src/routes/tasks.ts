@@ -20,7 +20,6 @@ export async function listTasks(req: Request, res: Response) {
 
 export async function getTask(req: Request, res: Response) {
   const { id } = req.params;
-  console.log(id);
   const task = await getDatabase()?.getTask(id);
 
   if (!task) {
