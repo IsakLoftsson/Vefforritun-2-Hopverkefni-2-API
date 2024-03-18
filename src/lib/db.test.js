@@ -1,5 +1,6 @@
 import { beforeEach, describe, expect, it, jest } from '@jest/globals';
 import { Database } from './db';
+import { Logger } from './logger.js';
 
 describe('db', () => {
   /** @type import('./logger').Logger */

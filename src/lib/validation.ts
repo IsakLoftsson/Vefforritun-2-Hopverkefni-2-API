@@ -16,8 +16,6 @@ export function createTaskValidationMiddleware() {
       .withMessage('Dagsetning verður að vera gild'),
     body('task_type').custom(async (value) => {
       const task_type = (await getDatabase()?.getTaskTypes()) ?? [];
-
-      console.log(task_type)
     
       if (!task_type.find((t) => t.id.toString() === value.toString())) {
         throw new Error('TaskType verkefnis verður að vera gilt');

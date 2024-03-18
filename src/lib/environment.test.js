@@ -1,5 +1,6 @@
 import { describe, expect, it, jest } from '@jest/globals';
 import { environment } from './environment.js';
+import { Logger } from './logger.js';
 
 describe('environment', () => {
   it('should handle missing env', async () => {
