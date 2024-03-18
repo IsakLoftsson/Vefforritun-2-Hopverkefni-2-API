@@ -1,5 +1,4 @@
 DROP TABLE IF EXISTS tasks;
 DROP TABLE IF EXISTS task_types;
 DROP TABLE IF EXISTS task_tags;
-DROP TABLE IF EXISTS task_type_association;
 DROP TABLE IF EXISTS users;

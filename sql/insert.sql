@@ -19,4 +19,4 @@ INSERT INTO tasks (name, description, task_type, task_tag, user_id) VALUES ('Ver
 INSERT INTO tasks (name, description, task_type, task_tag, user_id) VALUES ('Pakka', 'Pakka fyrir útivist', '1', '3', '3');
 INSERT INTO tasks (name, description, task_type, task_tag, user_id) VALUES ('Lesa', 'Lesa bók', '4', '2', '2');
 INSERT INTO tasks (name, description, task_type, task_tag, user_id) VALUES ('Skóla', 'Fara í skóla', '3', '1', '1');
-INSERT INTO tasks (name, description, task_type, task_tag, user_id) VALUES ('Annað', 'Annað', '5', '5', '5');
+INSERT INTO tasks (name, description, task_type, task_tag, user_id) VALUES ('Annað', 'Annað', '5', '5', '1');
