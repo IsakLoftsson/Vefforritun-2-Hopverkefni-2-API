@@ -20,6 +20,7 @@ export async function index(req: Request, res: Response) {
       href: '/verkefni/:slug',
       methods: ['GET', 'PATCH', 'DELETE'],
     },
+    /*
     {
       href: '/verkefni_klarud',
       methods: ['GET', 'POST'],
@@ -28,6 +29,7 @@ export async function index(req: Request, res: Response) {
       href: '/verkefni_klarud/:slug',
       methods: ['GET', 'PATCH', 'DELETE'],
     },
+    */
     {
       href: '/flokkar',
       methods: ['GET', 'POST'],
@@ -52,8 +54,6 @@ router.post('/flokkar', createTaskType);
 router.get('/flokkar/:slug', getTaskType);
 router.patch('/flokkar/:slug', updateTaskType);
 router.delete('/flokkar/:slug', deleteTaskType);
-
-
 
 /*
 router.get('/verkefni_klarud', listTaskTypes);
