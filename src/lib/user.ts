@@ -8,14 +8,14 @@ const db = getDatabase()!;
 
 
 export async function listUsers(req: Request, res: Response, next: NextFunction) {
-    const teams = await db.getUsers();
+    const users = await db.getUsers();
 
-    if (!teams) {
+    if (!users) {
         return next(new Error('unable to get users'));
      
     }
 
-  return res.json(teams);
+  return res.json(users);
 }
 
 

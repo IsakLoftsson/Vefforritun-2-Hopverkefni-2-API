@@ -185,48 +185,48 @@ export function atLeastOneBodyValueValidator(fields: Array<string>) {
 }
 
 export const usernameValidator = body('username')
-  .isLength({ min: 1, max: 256 })
-  .withMessage('username is required, max 256 characters');
+.isLength({ min: 1, max: 256 })
+.withMessage('username is required, max 256 characters');
 
-  export const passwordValidator = body('password')
-  .isLength({ min: 1, max: 256 })
-  .withMessage('password is required, min 10 characters, max 256 characters');
+export const passwordValidator = body('password')
+.isLength({ min: 1, max: 256 })
+.withMessage('password is required, min 10 characters, max 256 characters');
 
 
-  export const usernameDoesNotExistValidator = body('username').custom(
-    async (username) => {
+export const usernameDoesNotExistValidator = body('username').custom(
+  async (username) => {
+    const user = await findByUsername(username);
+
+    if (user) {
+      return Promise.reject(new Error('username already exists'));
+    }
+    return Promise.resolve();
+  }
+);
+
+export const usernameAndPaswordValidValidator = body('username').custom(
+  async (username, { req: { body: reqBody } = {} }) => {
+    // Can't bail after username and password validators, so some duplication
+    // of validation here
+    // TODO use schema validation instead?
+    const { password } = reqBody;
+
+    if (!username || !password) {
+      return Promise.reject(new Error('skip'));
+    }
+
+    let valid = false;
+    try {
       const user = await findByUsername(username);
-  
-      if (user) {
-        return Promise.reject(new Error('username already exists'));
-      }
-      return Promise.resolve();
+      valid = await comparePasswords(password, user.password);
+    } catch (e) {
+      // Here we would track login attempts for monitoring purposes
+      logger.info(`invalid login attempt for ${username}`);
     }
-  );
-  
-  export const usernameAndPaswordValidValidator = body('username').custom(
-    async (username, { req: { body: reqBody } = {} }) => {
-      // Can't bail after username and password validators, so some duplication
-      // of validation here
-      // TODO use schema validation instead?
-      const { password } = reqBody;
-  
-      if (!username || !password) {
-        return Promise.reject(new Error('skip'));
-      }
-  
-      let valid = false;
-      try {
-        const user = await findByUsername(username);
-        valid = await comparePasswords(password, user.password);
-      } catch (e) {
-        // Here we would track login attempts for monitoring purposes
-        logger.info(`invalid login attempt for ${username}`);
-      }
-  
-      if (!valid) {
-        return Promise.reject(new Error('username or password incorrect'));
-      }
-      return Promise.resolve();
+
+    if (!valid) {
+      return Promise.reject(new Error('username or password incorrect'));
     }
-  );
+    return Promise.resolve();
+  }
+);

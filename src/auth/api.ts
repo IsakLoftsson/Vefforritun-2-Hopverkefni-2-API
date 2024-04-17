@@ -14,12 +14,6 @@ import { createUser, findByUsername} from './users.js';
 
 import patch from 'express-ws/lib/add-ws-method.js';
 
-/**
- * Skilgreinir API fyrir nýskráningu, innskráningu notanda, ásamt því að skila
- * upplýsingum um notanda og uppfæra þær.
- */
-
-
 patch.default(express.Router);
 
 export const apiRouter = express.Router();
@@ -46,6 +40,7 @@ async function loginRoute(req, res) {
 
   const payload = { id: user.id };
   const token = jwt.sign(payload, jwtOptions.secretOrKey, tokenOptions);
+  console.log('token', token);
   delete user.password;
 
   return res.json({
