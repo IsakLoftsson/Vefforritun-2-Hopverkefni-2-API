@@ -1,8 +1,9 @@
 import pg from 'pg';
 import slugify from 'slugify';
-import { DatabaseTask, DatabaseTaskTag, DatabaseTaskType, DatabaseUser, Task } from '../types.js';
+import { DatabaseTask, DatabaseTaskTag, DatabaseTaskType, /* DatabaseUser,*/ Task, User } from '../types.js';
 import { environment } from './environment.js';
 import { ILogger, logger as loggerSingleton } from './logger.js';
+import { UserMapper, UsersMapper } from './mappers.js';
 
 const MAX_TASKS = 100;
 
@@ -159,26 +160,6 @@ export class Database {
       }
 
       return task_types;
-    }
-
-    return null;
-  }
-  async getUsers() {
-    const q = 'SELECT id, name FROM users';
-    const result = await this.query(q);
-
-    const users: Array<DatabaseUser> = [];
-    if (result && (result.rows?.length ?? 0) > 0) {
-      for (const row of result.rows) {
-        const user: DatabaseUser = {
-          id: row.id,
-          name: row.name,
-          admin: row.admin
-        };
-        users.push(user);
-      }
-
-      return users;
     }
 
     return null;
@@ -369,6 +350,60 @@ export class Database {
   }
 
   /**
+ * Insert a task into the database.
+ */
+  /*
+  async insertUser(user: Omit<DatabaseUser, 'id'>): Promise<User | null> {
+    const q = `
+      INSERT INTO
+        users (name, username, password, admin)
+      VALUES
+        ($1, $2, $3, $4)
+      ON CONFLICT DO NOTHING RETURNING id
+    `;
+
+    const result = await this.query(q, [
+      user.name,
+      user.admin,
+    ]);
+
+    if (!result || result.rowCount !== 1) {
+      this.logger.warn('unable to insert user', { result, user });
+      return null;
+    }
+    return this.getUsers(result.rows[0].id);
+  }
+  */
+
+  /**
+ * Insert a task into the database.
+ */
+  async insertTask(task: Omit<DatabaseTask, 'id'>): Promise<Task | null> {
+    const q = `
+      INSERT INTO
+        tasks (name, description, date, task_type, task_tag, user_id)
+      VALUES
+        ($1, $2, $3, $4, $5, $6)
+      ON CONFLICT DO NOTHING RETURNING id
+    `;
+
+    const result = await this.query(q, [
+      task.name,
+      task.description,
+      task.date,
+      task.task_type_id, // ??? .toString() ???
+      task.task_tag_id, // ??? .toString() ???
+      task.user_id, // ??? .toString() ???
+    ]);
+
+    if (!result || result.rowCount !== 1) {
+      this.logger.warn('unable to insert task', { result, task });
+      return null;
+    }
+    return this.getTask(result.rows[0].id);
+  }
+
+  /**
    * Insert a task type into the database.
    * @param type_name Task type to insert.
    */
@@ -407,35 +442,7 @@ export class Database {
     }
     return inserted;
   }
-
-  /**
-   * Insert a task into the database.
-   */
-  async insertTask(task: Omit<DatabaseTask, 'id'>): Promise<Task | null> {
-    const q = `
-      INSERT INTO
-        tasks (name, description, date, task_type, task_tag, user_id)
-      VALUES
-        ($1, $2, $3, $4, $5, $6)
-      RETURNING id
-    `;
-
-    const result = await this.query(q, [
-      task.name,
-      task.description,
-      task.date,
-      task.task_type_id, // ??? .toString() ???
-      task.task_tag_id, // ??? .toString() ???
-      task.user_id, // ??? .toString() ???
-    ]);
-
-    if (!result || result.rowCount !== 1) {
-      this.logger.warn('unable to insert task', { result, task });
-      return null;
-    }
-    return this.getTask(result.rows[0].id);
-  }
-
+  
   /**
    * Insert gamedays into the database.
    */
@@ -493,6 +500,85 @@ export class Database {
       return false;
     }
     return true;
+  }
+
+  async getUserByUserName(
+    userName: string,
+  ): Promise<User | null> {
+    
+    const result = await this.query(`SELECT * FROM users WHERE name = $1`, [
+      userName,
+    ]);
+  
+    if (!result) {
+      return null;
+    }
+  
+    const user = UserMapper(result.rows[0]);
+  
+    return user;
+  }
+  
+  async getUserByUserId(
+    userId: string,
+  ): Promise<User | null> {
+    const result = await this.query(`SELECT * FROM users WHERE id = $1`, [
+      userId,
+    ]);
+  
+    if (!result) {
+      return null;
+    }
+  
+    const user = UserMapper(result.rows[0]);
+  
+    return user;
+  }
+
+  async deleteUserByUsername(
+    username: string,
+  ): Promise<boolean> {
+    // eslint-disable-next-line
+    const result2 = await this.query('DELETE FROM registrations WHERE username = $1', [username]);
+
+    const result = await this.query('DELETE FROM users WHERE name = $1', [
+      username,
+    ]);
+  
+    if (!result) {
+      return false;
+    }
+  
+    return result.rowCount === 1;
+  }
+
+  async  getUsers(): Promise<Array<User> | null> {
+    const result = await this.query('SELECT * FROM users');
+  
+    if (!result) {
+      return null;
+    }
+  
+    const users = UsersMapper(result.rows).map((d) => {
+      return d;
+    });
+  
+    return users;
+  }
+  
+  
+  async insertUser(
+    user: Omit<User, 'id'>,
+  ): Promise<User | null> {
+    const {name, password  } = user;
+    const result = await this.query(
+      'INSERT INTO users (name, password) VALUES ($1, $2) RETURNING *',
+      [ name, password],
+    );
+  
+    const mapped = UserMapper(result?.rows[0]);
+  
+    return mapped;
   }
 }
 

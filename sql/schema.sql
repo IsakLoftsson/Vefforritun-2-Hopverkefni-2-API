@@ -1,7 +1,6 @@
 CREATE TABLE public.users (
-  id SERIAL PRIMARY KEY,
-  name CHARACTER VARYING(64) NOT NULL,
-  username character varying(64) NOT NULL UNIQUE,
+  id serial primary key,
+  name CHARACTER VARYING(64) NOT NULL UNIQUE,
   password character varying(256) NOT NULL,
   admin BOOLEAN DEFAULT false
 );
