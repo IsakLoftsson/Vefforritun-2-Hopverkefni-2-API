@@ -1,4 +1,4 @@
-import express /*, { Request, Response }*/ from 'express';
+import express , { Request, Response } from 'express';
 import { createTask, deleteTask, getTask, listTasks } from './tasks.js';
 import {
   createTaskType,
@@ -13,7 +13,7 @@ import { requireAdmin, requireAuthentication } from '../auth/passport.js';
 
 export const adminRouter = express.Router();
 
-export async function index(req, res) {
+export async function index(req: Request, res: Response) {
   return res.json([
     {
       href: '/verkefni',
