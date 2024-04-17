@@ -8,7 +8,14 @@ const DEFAULT_PORT = 3000;
 
 export type Environment = {
   port: number;
+  sessionSecret: string;
   connectionString: string;
+  jwtString: string
+  cloudinaryName: string;
+  apiKey: string;
+  apiSecret: string;
+  tokenTime: number;
+  bcryptRounds: number;
 };
 
 let parsedEnv: Environment | null = null;
@@ -27,7 +34,17 @@ export function environment(
     return parsedEnv;
   }
 
-  const { PORT: port, DATABASE_URL: envConnectionString } = env;
+  const { 
+    PORT: port, 
+    SESSION_SECRET: sessionSecret, 
+    DATABASE_URL: envConnectionString, 
+    JWT_SECRET: jwtString,
+    CLOUDINARY_CLOUD_NAME : cloudinaryName,
+    CLOUDINARY_API_KEY : apiKey,
+    CLOUDINARY_API_SECRET : apiSecret,
+    TOKEN_LIFETIME: tokens,
+    BCRYPT_ROUNDS: bcrypt
+  } = env;
 
   let error = false;
 
@@ -49,6 +66,9 @@ export function environment(
     usedPort = DEFAULT_PORT;
   }
 
+  const tokenTime = Number.parseInt(tokens ?? '', 10);
+  const bcryptRounds = Number.parseInt(bcrypt ?? '', 10);
+
   if (error) {
     return null;
   }
@@ -58,7 +78,14 @@ export function environment(
 
   parsedEnv = {
     port: usedPort,
+    sessionSecret,
     connectionString,
+    jwtString,
+    cloudinaryName,
+    apiKey,
+    apiSecret,
+    tokenTime,
+    bcryptRounds
   };
 
   return parsedEnv;

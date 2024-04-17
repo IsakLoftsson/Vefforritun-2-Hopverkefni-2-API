@@ -8,7 +8,6 @@ import {
   updateTaskType,
 } from './task-types.js';
 import { deleteUser, listUsers, createUser } from '../lib/user.js';
-
 import { requireAdmin, requireAuthentication } from '../auth/passport.js';
 
 export const adminRouter = express.Router();

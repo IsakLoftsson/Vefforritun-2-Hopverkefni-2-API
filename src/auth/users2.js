@@ -1,9 +1,8 @@
 import bcrypt from 'bcrypt';
 import xss from 'xss';
 import dotenv from 'dotenv';
-
-import { conditionalUpdate, query } from '../db.js';
-import { logger } from '../utils/logger.js';
+import { conditionalUpdate, query } from '../lib/db.js';
+import { logger } from '../lib/logger.js';
 
 dotenv.config();
 
