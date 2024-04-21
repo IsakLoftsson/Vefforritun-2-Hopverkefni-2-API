@@ -145,7 +145,7 @@ export class Database {
    * Get task types from the database.
    */
   async getTaskTypes() {
-    const q = 'SELECT id, name FROM task_types';
+    const q = 'SELECT id, name, slug FROM task_types';
     const result = await this.query(q);
 
     const task_types: Array<DatabaseTaskType> = [];
