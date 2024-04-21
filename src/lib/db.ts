@@ -412,7 +412,7 @@ export class Database {
   ): Promise<DatabaseTaskType | null> {
     const result = await this.query(
       'INSERT INTO task_types (name, slug) VALUES ($1, $2) ON CONFLICT DO NOTHING RETURNING id, name',
-      [type_name, slugify(type_name)],
+      [type_name, slugify(type_name, { lower: true })],
     );
     if (result) {
       const resultTaskTypes: DatabaseTaskType = {
